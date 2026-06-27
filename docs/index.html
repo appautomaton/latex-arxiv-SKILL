@@ -43,7 +43,7 @@
     --term-bg:#15211b; --term-text:#e7efe7; --term-faint:#7d9586; --term-accent:#8fdcb0;
     --nav-bg:rgba(236,238,227,.82); --shadow:rgba(40,55,42,.20);
     --glow-1:rgba(47,143,99,.12); --glow-2:rgba(123,182,150,.12);
-    --grain-opacity:.035; --grain-blend:multiply;
+    --grain-opacity:.035; --grain-blend:multiply; --hex:rgba(31,110,74,.08);
   }
   :root[data-theme="dark"]{
     --bg:#0a120d; --surface:#101a14; --surface-2:#16221b;
@@ -55,7 +55,7 @@
     --term-bg:#07100b; --term-text:#e7efe7; --term-faint:#5f7568; --term-accent:#8fe6b6;
     --nav-bg:rgba(10,18,13,.78); --shadow:rgba(0,0,0,.7);
     --glow-1:rgba(118,220,171,.18); --glow-2:rgba(63,174,120,.12);
-    --grain-opacity:.05; --grain-blend:overlay;
+    --grain-opacity:.05; --grain-blend:overlay; --hex:rgba(118,220,171,.07);
   }
   :root{
     --r:16px; --maxw:1180px;
@@ -75,13 +75,16 @@
   .atmo .glow{position:absolute;border-radius:50%;filter:blur(90px);opacity:.8}
   .atmo .g1{top:-14%;left:50%;transform:translateX(-50%);width:760px;height:520px;
     background:radial-gradient(closest-side,var(--glow-1),transparent 70%)}
-  .atmo .g2{top:46%;left:-10%;width:520px;height:520px;
-    background:radial-gradient(closest-side,var(--glow-2),transparent 70%)}
-  .atmo .grid{position:absolute;inset:0;opacity:.6;
-    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
-    background-size:64px 64px;
-    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000,transparent 75%);
-    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000,transparent 75%)}
+  .aura{position:fixed;left:0;top:0;width:640px;height:640px;border-radius:50%;pointer-events:none;z-index:0;
+    background:radial-gradient(closest-side,var(--glow-2),transparent 70%);filter:blur(60px);opacity:.95;
+    transform:translate3d(50vw,32vh,0) translate(-50%,-50%);will-change:transform}
+  .hexbg{position:absolute;inset:0;overflow:hidden;color:var(--hex);opacity:.75;
+    -webkit-mask-image:radial-gradient(ellipse 88% 66% at 50% 0%,#000,transparent 80%);
+    mask-image:radial-gradient(ellipse 88% 66% at 50% 0%,#000,transparent 80%)}
+  .hxlayer{position:absolute;left:-120px;top:-196px;width:calc(100% + 240px);height:calc(100% + 392px);
+    animation:hexdrift 34s linear infinite}
+  .hxlayer path{fill:currentColor}
+  @keyframes hexdrift{to{transform:translate3d(-56px,-98px,0)}}
   .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:var(--grain-opacity);mix-blend-mode:var(--grain-blend);
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
@@ -320,7 +323,11 @@
 </head>
 <body>
 
-<div class="atmo" aria-hidden="true"><div class="glow g1"></div><div class="glow g2"></div><div class="grid"></div></div>
+<div class="atmo" aria-hidden="true">
+  <div class="hexbg"><svg class="hxlayer" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"><defs><pattern id="hexp" width="28" height="49" patternUnits="userSpaceOnUse" patternTransform="scale(2)"><path fill-rule="evenodd" d="M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.85V49h-2z"/></pattern></defs><rect width="100%" height="100%" fill="url(#hexp)"/></svg></div>
+  <div class="glow g1"></div>
+  <div class="aura" id="aura"></div>
+</div>
 <div class="grain" aria-hidden="true"></div>
 
 <header class="nav">
@@ -422,7 +429,7 @@
         <div class="step"><div class="k">05</div><h4>Write &amp; verify</h4><p>Each section researched and drafted, every citation checked against a live source.</p></div>
         <div class="step"><div class="k">06</div><h4>Rhythm refinement</h4><p>Sentence and paragraph length varied for readability, citations preserved.</p></div>
         <div class="step"><div class="k">07</div><h4>QA &amp; compile</h4><p>Overfull boxes fixed. Zero undefined citations before delivery.</p></div>
-        <div class="step out"><div class="k">08 · output</div><h4>Ready for arXiv</h4><p>main.pdf and a verified ref.bib.<span class="badge-min">compiles clean</span></p></div>
+        <div class="step out"><div class="k">08 · output</div><h4>Ready as a preprint</h4><p>main.pdf and a verified ref.bib.<span class="badge-min">compiles clean</span></p></div>
       </div>
     </div>
   </section>
@@ -523,7 +530,7 @@
       <div class="reveal">
         <div class="eyebrow" style="justify-content:center">Open source · MIT</div>
         <h2>Star it. Fork it.<br/><i>Write your paper.</i></h2>
-        <p>A highly customizable agentic harness for arXiv-ready review papers and beyond.</p>
+        <p>A highly customizable agentic harness for preprint-ready review papers and beyond.</p>
         <div class="cta">
           <a class="btn btn-p" href="https://github.com/appautomaton/latex-arxiv-SKILL" target="_blank" rel="noopener">
             <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -571,6 +578,16 @@
       mq.addEventListener('change',function(e){ try{ if(!localStorage.getItem(key)) apply(e.matches?'dark':'light'); }catch(_){}});
     }catch(e){}
     apply(cur());
+  })();
+
+  (function(){
+    var aura=document.getElementById('aura'); if(!aura) return;
+    try{ if(matchMedia('(prefers-reduced-motion: reduce)').matches) return; }catch(e){}
+    var tx=innerWidth/2, ty=innerHeight*0.32, ax=tx, ay=ty;
+    addEventListener('pointermove',function(e){tx=e.clientX; ty=e.clientY;},{passive:true});
+    (function loop(){ ax+=(tx-ax)*0.075; ay+=(ty-ay)*0.075;
+      aura.style.transform='translate3d('+ax.toFixed(1)+'px,'+ay.toFixed(1)+'px,0) translate(-50%,-50%)';
+      requestAnimationFrame(loop); })();
   })();
 
   (function(){
