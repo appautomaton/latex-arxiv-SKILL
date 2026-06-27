@@ -1,12 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script>
+  /* resolve theme before paint: saved choice, else OS preference */
+  (function(){try{
+    var k='arxh-theme',s=localStorage.getItem(k);
+    var t=s||((window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light');
+    document.documentElement.setAttribute('data-theme',t);
+  }catch(e){}})();
+</script>
 <title>arXiv Review Paper Harness · agentic harness for ML/AI review papers</title>
 <meta name="description" content="A highly customizable agentic harness for arXiv-ready ML/AI review papers and beyond. It drives agentic AI like Codex CLI and Claude Code through a gated LaTeX workflow with verified BibTeX citations." />
 <link rel="canonical" href="https://appautomaton.github.io/latex-arxiv-SKILL/" />
-<meta name="theme-color" content="#0c0a09" />
+<meta name="theme-color" content="#eceee3" id="meta-theme" />
 
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://appautomaton.github.io/latex-arxiv-SKILL/" />
@@ -18,277 +26,269 @@
 <meta name="twitter:description" content="An agentic harness for arXiv-ready ML/AI review papers. Gated LaTeX workflow with verified BibTeX citations." />
 <meta name="twitter:image" content="https://appautomaton.github.io/latex-arxiv-SKILL/og-image.png" />
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230c0a09'/%3E%3Crect x='9' y='6' width='14' height='20' rx='1.5' fill='%23f4efe1'/%3E%3Crect x='11.5' y='9.5' width='9' height='1.6' fill='%230c0a09'/%3E%3Crect x='11.5' y='13' width='4' height='9' fill='%23ecd9a6'/%3E%3Crect x='16.5' y='13' width='4' height='9' fill='%23d9cdb6'/%3E%3Crect x='11.5' y='13' width='4' height='1.4' fill='%23f4b333'/%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d2a21'/%3E%3Crect x='9' y='6' width='14' height='20' rx='1.5' fill='%23fbfaf3'/%3E%3Crect x='11.5' y='9.5' width='9' height='1.6' fill='%231d2a21'/%3E%3Crect x='11.5' y='13' width='4' height='9' fill='%23b7ddc4'/%3E%3Crect x='16.5' y='13' width='4' height='9' fill='%23d3ddcb'/%3E%3Crect x='11.5' y='13' width='4' height='1.4' fill='%232f8f63'/%3E%3C/svg%3E" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..600&family=Hanken+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
 
 <style>
+  :root[data-theme="light"]{
+    --bg:#eceee3; --surface:#f5f6ee; --surface-2:#eef0e6;
+    --paper:#fbfaf3; --paper-ink:#20281f; --paper-line:rgba(32,40,31,.18); --paper-faint:#717c6b;
+    --text:#1d2a21; --dim:#55624f; --faint:#8a9382;
+    --line:rgba(29,42,33,.13); --line-2:rgba(29,42,33,.22);
+    --accent:#2f8f63; --accent-deep:#1f6e4a; --accent-soft:#b7ddc4; --accent-tint:rgba(47,143,99,.10);
+    --em:#1f6e4a; --btn-ink:#fbfaf3;
+    --term-bg:#15211b; --term-text:#e7efe7; --term-faint:#7d9586; --term-accent:#8fdcb0;
+    --nav-bg:rgba(236,238,227,.82); --shadow:rgba(40,55,42,.20);
+    --glow-1:rgba(47,143,99,.12); --glow-2:rgba(123,182,150,.12);
+    --grain-opacity:.035; --grain-blend:multiply;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0a120d; --surface:#101a14; --surface-2:#16221b;
+    --paper:#f3f4ea; --paper-ink:#1a201a; --paper-line:rgba(26,32,26,.18); --paper-faint:#7a8576;
+    --text:#e9f1ea; --dim:#9fb3a6; --faint:#66786c;
+    --line:rgba(233,241,234,.10); --line-2:rgba(233,241,234,.17);
+    --accent:#76dcab; --accent-deep:#3fae78; --accent-soft:#a7ebc8; --accent-tint:rgba(118,220,171,.12);
+    --em:#a7ebc8; --btn-ink:#06160e;
+    --term-bg:#07100b; --term-text:#e7efe7; --term-faint:#5f7568; --term-accent:#8fe6b6;
+    --nav-bg:rgba(10,18,13,.78); --shadow:rgba(0,0,0,.7);
+    --glow-1:rgba(118,220,171,.18); --glow-2:rgba(63,174,120,.12);
+    --grain-opacity:.05; --grain-blend:overlay;
+  }
   :root{
-    --bg:#0c0a09;
-    --bg-1:#121029;
-    --surface:#15110d;
-    --surface-2:#1c1712;
-    --paper:#f4efe1;
-    --paper-ink:#1a1712;
-    --text:#f3ede1;
-    --dim:#a99e8c;
-    --faint:#6f6657;
-    --line:rgba(243,237,225,.10);
-    --line-2:rgba(243,237,225,.16);
-    --gold:#f4b333;
-    --gold-soft:#ecd9a6;
-    --gold-deep:#c98a12;
-    --green:#6bcb77;
-    --green-deep:#3da639;
-    --r:16px;
-    --maxw:1180px;
+    --r:16px; --maxw:1180px;
     --serif:"Fraunces",Georgia,serif;
     --sans:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,sans-serif;
     --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+    --paper-serif:"Times New Roman","Fraunces",Georgia,serif;
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-  body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:var(--sans);
-    font-weight:400;
-    line-height:1.6;
-    letter-spacing:.002em;
-    overflow-x:hidden;
-    -webkit-font-smoothing:antialiased;
-  }
-  ::selection{background:var(--gold);color:#1a1408}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:400;line-height:1.6;
+    letter-spacing:.002em;overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .5s ease,color .5s ease}
+  ::selection{background:var(--accent);color:var(--btn-ink)}
 
-  /* atmosphere */
   .atmo{position:fixed;inset:0;z-index:0;pointer-events:none}
-  .atmo .glow{
-    position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;
-  }
+  .atmo .glow{position:absolute;border-radius:50%;filter:blur(90px);opacity:.8}
   .atmo .g1{top:-14%;left:50%;transform:translateX(-50%);width:760px;height:520px;
-    background:radial-gradient(closest-side,rgba(244,179,51,.20),transparent 70%)}
+    background:radial-gradient(closest-side,var(--glow-1),transparent 70%)}
   .atmo .g2{top:46%;left:-10%;width:520px;height:520px;
-    background:radial-gradient(closest-side,rgba(61,166,57,.10),transparent 70%)}
-  .atmo .grid{position:absolute;inset:0;opacity:.5;
+    background:radial-gradient(closest-side,var(--glow-2),transparent 70%)}
+  .atmo .grid{position:absolute;inset:0;opacity:.6;
     background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
     background-size:64px 64px;
-    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000,transparent 75%);
-    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000,transparent 75%)}
-  .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.045;mix-blend-mode:overlay;
+    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000,transparent 75%);
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000,transparent 75%)}
+  .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:var(--grain-opacity);mix-blend-mode:var(--grain-blend);
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;position:relative;z-index:2}
 
-  /* nav */
-  header.nav{position:sticky;top:0;z-index:40;
-    backdrop-filter:saturate(140%) blur(14px);-webkit-backdrop-filter:saturate(140%) blur(14px);
-    background:linear-gradient(to bottom,rgba(12,10,9,.86),rgba(12,10,9,.5));
-    border-bottom:1px solid var(--line)}
+  header.nav{position:sticky;top:0;z-index:40;backdrop-filter:saturate(140%) blur(14px);-webkit-backdrop-filter:saturate(140%) blur(14px);
+    background:var(--nav-bg);border-bottom:1px solid var(--line)}
   .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:66px}
   .brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--text)}
-  .brand .mk{width:26px;height:26px;border-radius:7px;flex:none;
-    background:linear-gradient(150deg,#241d14,#0c0a09);border:1px solid var(--line-2);
-    display:grid;place-items:center}
-  .brand .mk b{font-family:var(--serif);font-weight:600;font-size:15px;color:var(--gold-soft);line-height:1}
+  .brand .mk{width:26px;height:26px;border-radius:7px;flex:none;background:var(--accent);display:grid;place-items:center}
+  .brand .mk b{font-family:var(--serif);font-weight:600;font-size:15px;color:var(--btn-ink);line-height:1}
   .brand .nm{font-family:var(--serif);font-weight:600;font-size:17px;letter-spacing:.01em}
-  .brand .nm i{font-style:italic;color:var(--gold-soft)}
-  nav.links{display:flex;align-items:center;gap:30px}
-  nav.links a{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--dim);text-decoration:none;transition:color .2s}
+  .brand .nm i{font-style:italic;color:var(--accent-deep)}
+  :root[data-theme="dark"] .brand .nm i{color:var(--accent-soft)}
+  .navright{display:flex;align-items:center;gap:18px}
+  nav.links{display:flex;align-items:center;gap:28px}
+  nav.links a{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s}
   nav.links a:hover{color:var(--text)}
-  .ghbtn{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;
-    letter-spacing:.04em;color:#1a1408;background:var(--gold);text-decoration:none;
-    padding:9px 15px;border-radius:9px;font-weight:600;transition:transform .18s,box-shadow .25s;
-    box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 8px 22px -10px rgba(244,179,51,.6)}
-  .ghbtn:hover{transform:translateY(-1px);box-shadow:0 1px 0 rgba(255,255,255,.3) inset,0 12px 26px -10px rgba(244,179,51,.75)}
+  .tbtn{width:36px;height:36px;border-radius:9px;border:1px solid var(--line-2);background:transparent;color:var(--text);
+    display:grid;place-items:center;cursor:pointer;transition:border-color .2s,color .2s,transform .2s}
+  .tbtn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+  .tbtn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.7}
+  .tbtn .ic-sun{display:none}
+  :root[data-theme="dark"] .tbtn .ic-sun{display:block}
+  :root[data-theme="dark"] .tbtn .ic-moon{display:none}
+  .ghbtn{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:.04em;
+    color:var(--btn-ink);background:var(--accent);text-decoration:none;padding:9px 15px;border-radius:9px;font-weight:600;
+    transition:transform .18s,box-shadow .25s;box-shadow:0 8px 22px -12px var(--accent)}
+  .ghbtn:hover{transform:translateY(-1px)}
   .ghbtn svg{width:15px;height:15px}
 
-  /* eyebrow / section label */
-  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;
-    color:var(--gold);display:inline-flex;align-items:center;gap:10px}
-  .eyebrow::before{content:"";width:26px;height:1px;background:var(--gold);opacity:.6}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-deep);display:inline-flex;align-items:center;gap:10px}
+  :root[data-theme="dark"] .eyebrow{color:var(--accent)}
+  .eyebrow::before{content:"";width:26px;height:1px;background:currentColor;opacity:.6}
   .slabel{font-family:var(--mono);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
-  .slabel b{color:var(--gold);font-weight:500}
+  .slabel b{color:var(--accent-deep);font-weight:600}
+  :root[data-theme="dark"] .slabel b{color:var(--accent)}
 
-  /* hero */
   .hero{padding:74px 0 36px;position:relative}
   .hero-grid{display:grid;grid-template-columns:1.06fr .94fr;gap:54px;align-items:center}
-  h1{font-family:var(--serif);font-weight:500;
-    font-size:clamp(2.7rem,6.4vw,5.1rem);line-height:.98;letter-spacing:-.02em;
-    margin:22px 0 0}
-  h1 .em{font-style:italic;color:var(--gold-soft);position:relative;white-space:nowrap}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(2.7rem,6.4vw,5.1rem);line-height:.98;letter-spacing:-.02em;margin:22px 0 0}
+  h1 .em{font-style:italic;color:var(--em);position:relative;white-space:nowrap}
   h1 .em::after{content:"";position:absolute;left:0;right:0;bottom:.07em;height:.085em;
-    background:linear-gradient(90deg,var(--gold),transparent);border-radius:2px;opacity:.9}
+    background:linear-gradient(90deg,var(--accent),transparent);border-radius:2px;opacity:.85}
   .lede{color:var(--dim);font-size:clamp(1.02rem,1.5vw,1.2rem);line-height:1.62;max-width:34em;margin-top:26px}
-  .lede b{color:var(--text);font-weight:500}
+  .lede b{color:var(--text);font-weight:600}
   .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
-  .btn{display:inline-flex;align-items:center;gap:9px;text-decoration:none;font-family:var(--mono);
-    font-size:13px;letter-spacing:.02em;padding:13px 20px;border-radius:11px;transition:transform .18s,border-color .2s,background .2s}
-  .btn-p{background:var(--gold);color:#1a1408;font-weight:600;
-    box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 14px 30px -14px rgba(244,179,51,.7)}
+  .btn{display:inline-flex;align-items:center;gap:9px;text-decoration:none;font-family:var(--mono);font-size:13px;letter-spacing:.02em;
+    padding:13px 20px;border-radius:11px;transition:transform .18s,border-color .2s,background .2s,color .2s}
+  .btn-p{background:var(--accent);color:var(--btn-ink);font-weight:600;box-shadow:0 14px 30px -16px var(--accent)}
   .btn-p:hover{transform:translateY(-2px)}
   .btn-s{background:transparent;color:var(--text);border:1px solid var(--line-2)}
-  .btn-s:hover{transform:translateY(-2px);border-color:var(--gold);color:var(--gold-soft)}
+  .btn-s:hover{transform:translateY(-2px);border-color:var(--accent);color:var(--accent-deep)}
+  :root[data-theme="dark"] .btn-s:hover{color:var(--accent-soft)}
   .btn svg{width:16px;height:16px}
-  .byline{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px 18px;align-items:center;
-    font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--faint)}
+  .byline{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px 18px;align-items:center;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--faint)}
   .byline span{display:inline-flex;align-items:center;gap:8px}
-  .byline .dot{width:4px;height:4px;border-radius:50%;background:var(--green)}
+  .byline .dot{width:4px;height:4px;border-radius:50%;background:var(--accent)}
 
-  /* paper artifact */
-  .paper-wrap{position:relative;perspective:1400px}
-  .paper{background:var(--paper);color:var(--paper-ink);border-radius:6px;padding:30px 30px 26px;
-    box-shadow:0 50px 90px -40px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.04);
-    transform:rotateY(-13deg) rotateX(5deg) rotateZ(.6deg);transform-style:preserve-3d;
+  /* IEEE two-column artifact */
+  .paper-wrap{position:relative;perspective:1500px}
+  .ieee{background:var(--paper);color:var(--paper-ink);border-radius:5px;padding:26px 24px 22px;
+    font-family:var(--paper-serif);box-shadow:0 50px 90px -42px var(--shadow),0 0 0 1px rgba(0,0,0,.05);
+    transform:rotateY(-12deg) rotateX(5deg) rotateZ(.4deg);transform-style:preserve-3d;
     transition:transform .6s cubic-bezier(.2,.7,.2,1)}
-  .paper-wrap:hover .paper{transform:rotateY(-7deg) rotateX(3deg)}
-  .paper .ptag{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:#9a8e74}
-  .paper h3{font-family:var(--serif);font-weight:600;font-size:1.32rem;line-height:1.12;margin:8px 0 3px;letter-spacing:-.01em}
-  .paper .auth{font-family:var(--mono);font-size:9.5px;color:#8a7f68;letter-spacing:.04em;margin-bottom:14px}
-  .rule{height:1px;background:rgba(26,23,18,.18);margin:13px 0}
-  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  .col .ln{height:5px;border-radius:2px;background:rgba(26,23,18,.13);margin-bottom:6px}
-  .col .ln.s{width:62%}
-  .col .ln.hl{background:rgba(244,179,51,.5)}
-  .cite{display:inline-flex;align-items:center;gap:6px;margin-top:9px;font-family:var(--mono);
-    font-size:8.5px;letter-spacing:.04em;color:#5f7d4e;background:rgba(61,166,57,.13);
-    border:1px solid rgba(61,166,57,.3);border-radius:5px;padding:3px 7px}
-  .cite svg{width:9px;height:9px}
-  .stamp{position:absolute;right:-14px;top:-16px;z-index:3;background:var(--surface);
-    border:1px solid var(--line-2);border-radius:11px;padding:11px 14px;
-    box-shadow:0 18px 40px -18px rgba(0,0,0,.8);text-align:center;transform:rotate(3deg)}
-  .stamp .n{font-family:var(--serif);font-weight:600;font-size:1.5rem;color:var(--green);line-height:1}
+  .paper-wrap:hover .ieee{transform:rotateY(-6deg) rotateX(3deg)}
+  .ieee .tt{text-align:center;font-weight:700;font-size:1.04rem;line-height:1.18;letter-spacing:.004em}
+  .ieee .au{text-align:center;font-size:.64rem;font-style:italic;color:var(--paper-faint);margin:6px 0 1px}
+  .ieee .vn{text-align:center;font-family:var(--mono);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;color:var(--paper-faint);margin-bottom:13px}
+  .ieee .twocol{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+  .ieee .sech{text-align:center;font-variant:small-caps;font-weight:700;font-size:.62rem;letter-spacing:.05em;margin:8px 0 5px}
+  .ieee .abs{font-size:.575rem;line-height:1.46;text-align:justify}
+  .ieee .abs b{font-weight:700;font-style:italic}
+  .ieee .para{position:relative;height:32px;border-radius:1px;
+    background-image:repeating-linear-gradient(to bottom,var(--paper-line) 0 1.2px,transparent 1.2px 5.3px)}
+  .ieee .para.sm{height:21px} .ieee .para.lg{height:43px}
+  .ieee .para::after{content:"";position:absolute;right:0;bottom:0;height:5.3px;width:46%;background:var(--paper)}
+  .ieee .refline{font-size:.55rem;line-height:1.5;margin:4px 0}
+  .ieee .ref{color:var(--accent-deep);font-weight:700}
+  .ieee .eq{text-align:center;font-style:italic;font-size:.6rem;color:var(--paper-ink);margin:7px 0;opacity:.75}
+  .ieee .fig{margin:8px 0 4px}
+  .ieee .figbox{height:36px;border:1px solid var(--paper-line);border-radius:2px;
+    background:repeating-linear-gradient(45deg,var(--paper-line) 0 1px,transparent 1px 7px)}
+  .ieee .cap{font-size:.5rem;color:var(--paper-faint);text-align:center;margin-top:3px}
+  .stamp{position:absolute;right:-14px;top:-16px;z-index:3;background:var(--surface);border:1px solid var(--line-2);border-radius:11px;
+    padding:11px 14px;box-shadow:0 18px 40px -18px var(--shadow);text-align:center;transform:rotate(3deg)}
+  .stamp .n{font-family:var(--serif);font-weight:600;font-size:1.5rem;color:var(--accent-deep);line-height:1}
+  :root[data-theme="dark"] .stamp .n{color:var(--accent)}
   .stamp .l{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:3px}
 
-  /* stat strip */
   .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:30px}
-  .stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+  .stats .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
   .stat{padding:30px 26px;border-left:1px solid var(--line)}
   .stat:first-child{border-left:0;padding-left:0}
   .stat .n{font-family:var(--serif);font-weight:500;font-size:clamp(2rem,3.6vw,2.9rem);line-height:1;letter-spacing:-.02em}
-  .stat .n.gold{color:var(--gold-soft)} .stat .n.green{color:var(--green)}
+  .stat .n.a{color:var(--accent-deep)} :root[data-theme="dark"] .stat .n.a{color:var(--accent)}
   .stat .l{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--dim);margin-top:10px;line-height:1.5}
 
-  /* section scaffold */
   section{position:relative;z-index:2;scroll-margin-top:84px}
   .sec{padding:88px 0}
   .sec-head{max-width:46em;margin-bottom:48px}
-  .sec-head h2{font-family:var(--serif);font-weight:500;font-size:clamp(2rem,4vw,3rem);
-    line-height:1.04;letter-spacing:-.02em;margin:18px 0 0}
+  .sec-head h2{font-family:var(--serif);font-weight:500;font-size:clamp(2rem,4vw,3rem);line-height:1.04;letter-spacing:-.02em;margin:18px 0 0}
   .sec-head p{color:var(--dim);font-size:1.06rem;margin-top:16px;max-width:38em}
 
-  /* pipeline */
   .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-  .step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 20px 20px;
-    position:relative;overflow:hidden;transition:transform .25s,border-color .25s,background .25s}
+  .step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 20px 20px;position:relative;overflow:hidden;
+    transition:transform .25s,border-color .25s}
   .step:hover{transform:translateY(-4px);border-color:var(--line-2)}
   .step .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--faint)}
   .step h4{font-family:var(--serif);font-weight:600;font-size:1.18rem;margin:14px 0 7px;letter-spacing:-.01em}
   .step p{font-size:.92rem;color:var(--dim);line-height:1.55}
-  .step.gate{background:linear-gradient(160deg,rgba(244,179,51,.12),var(--surface));border-color:rgba(244,179,51,.4)}
-  .step.gate .k,.step.gate h4{color:var(--gold)}
+  .step.gate{background:linear-gradient(160deg,var(--accent-tint),var(--surface));border-color:var(--accent)}
+  .step.gate .k,.step.gate h4{color:var(--accent-deep)}
+  :root[data-theme="dark"] .step.gate .k,:root[data-theme="dark"] .step.gate h4{color:var(--accent)}
   .step.gate::after{content:"";position:absolute;inset:0;border-radius:14px;pointer-events:none;
-    box-shadow:0 0 60px -10px rgba(244,179,51,.4) inset;animation:pulse 3.4s ease-in-out infinite}
-  .step.out{background:linear-gradient(160deg,rgba(61,166,57,.13),var(--surface));border-color:rgba(61,166,57,.4)}
-  .step.out .k,.step.out h4{color:var(--green)}
-  @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
-  .badge-min{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-family:var(--mono);
-    font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;border-radius:6px}
-  .badge-min.g{color:var(--gold);background:rgba(244,179,51,.1);border:1px solid rgba(244,179,51,.3)}
-  .badge-min.v{color:var(--green);background:rgba(61,166,57,.1);border:1px solid rgba(61,166,57,.3)}
+    box-shadow:0 0 60px -12px var(--accent) inset;opacity:.4;animation:pulse 3.4s ease-in-out infinite}
+  .step.out{background:linear-gradient(160deg,var(--accent-tint),var(--surface));border-color:var(--accent-deep)}
+  .step.out .k,.step.out h4{color:var(--accent-deep)}
+  :root[data-theme="dark"] .step.out .k,:root[data-theme="dark"] .step.out h4{color:var(--accent-soft)}
+  @keyframes pulse{0%,100%{opacity:.25}50%{opacity:.6}}
+  .badge-min{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-family:var(--mono);font-size:9.5px;
+    letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;border-radius:6px;color:var(--accent-deep);background:var(--accent-tint);border:1px solid var(--accent)}
+  :root[data-theme="dark"] .badge-min{color:var(--accent)}
 
-  /* features */
   .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px 26px;
-    transition:transform .25s,border-color .25s}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px 26px;transition:transform .25s,border-color .25s}
   .card:hover{transform:translateY(-4px);border-color:var(--line-2)}
   .card .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;margin-bottom:18px;
-    background:linear-gradient(150deg,var(--surface-2),#0c0a09);border:1px solid var(--line-2)}
-  .card .ic svg{width:20px;height:20px;stroke:var(--gold-soft);fill:none;stroke-width:1.6}
+    background:var(--surface-2);border:1px solid var(--line-2)}
+  .card .ic svg{width:20px;height:20px;stroke:var(--accent);fill:none;stroke-width:1.6}
   .card h4{font-family:var(--serif);font-weight:600;font-size:1.22rem;letter-spacing:-.01em;margin-bottom:9px}
   .card p{color:var(--dim);font-size:.95rem;line-height:1.6}
+  .card code{font-family:var(--mono);font-size:.84em;color:var(--accent-deep);background:var(--accent-tint);padding:2px 6px;border-radius:5px}
+  :root[data-theme="dark"] .card code{color:var(--accent-soft)}
 
-  /* examples */
   .ex{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  .ex-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px;
-    display:flex;gap:24px;align-items:center;transition:transform .25s,border-color .25s;text-decoration:none;color:inherit}
-  .ex-card:hover{transform:translateY(-4px);border-color:var(--gold);}
+  .ex-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px;display:flex;gap:24px;align-items:center;
+    transition:transform .25s,border-color .25s;text-decoration:none;color:inherit}
+  .ex-card:hover{transform:translateY(-4px);border-color:var(--accent)}
   .mini{flex:none;width:104px;background:var(--paper);color:var(--paper-ink);border-radius:4px;padding:13px;
-    box-shadow:0 18px 36px -20px rgba(0,0,0,.8)}
-  .mini .mt{font-family:var(--serif);font-weight:600;font-size:.62rem;line-height:1.05;margin-bottom:6px}
-  .mini .mr{height:1px;background:rgba(26,23,18,.18);margin:5px 0}
-  .mini .mc{display:grid;grid-template-columns:1fr 1fr;gap:5px}
-  .mini .ln{height:3px;border-radius:1px;background:rgba(26,23,18,.14);margin-bottom:3.5px}
-  .mini .ln.hl{background:rgba(244,179,51,.45)}
+    font-family:var(--paper-serif);box-shadow:0 18px 36px -22px var(--shadow)}
+  .mini .mt{font-weight:700;font-size:.6rem;line-height:1.1;text-align:center;margin-bottom:5px}
+  .mini .mr{height:1px;background:var(--paper-line);margin:5px 0}
+  .mini .mc{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .mini .ln{height:2.4px;border-radius:1px;background:var(--paper-line);margin-bottom:3.4px}
+  .mini .ln.hl{background:var(--accent-soft)}
   .ex-card .v{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
   .ex-card h4{font-family:var(--serif);font-weight:600;font-size:1.3rem;line-height:1.1;margin:9px 0 12px;letter-spacing:-.01em}
   .ex-card .meta{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;color:var(--dim)}
-  .ex-card .chip{display:inline-flex;align-items:center;gap:6px;color:var(--green);
-    background:rgba(61,166,57,.1);border:1px solid rgba(61,166,57,.28);border-radius:6px;padding:4px 9px}
-  .ex-card .chip svg{width:11px;height:11px}
-  .ex-card .go{margin-top:14px;display:inline-flex;align-items:center;gap:7px;color:var(--gold-soft);font-family:var(--mono);font-size:11.5px}
+  .ex-card .chip{display:inline-flex;align-items:center;gap:6px;color:var(--accent-deep);background:var(--accent-tint);border:1px solid var(--accent);border-radius:6px;padding:4px 9px}
+  :root[data-theme="dark"] .ex-card .chip{color:var(--accent)}
+  .ex-card .chip svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2}
+  .ex-card .go{margin-top:14px;display:inline-flex;align-items:center;gap:7px;color:var(--accent-deep);font-family:var(--mono);font-size:11.5px}
+  :root[data-theme="dark"] .ex-card .go{color:var(--accent-soft)}
 
-  /* quickstart */
   .qs{display:grid;grid-template-columns:.85fr 1.15fr;gap:48px;align-items:start}
-  .term{background:#0a0807;border:1px solid var(--line-2);border-radius:16px;overflow:hidden;
-    box-shadow:0 40px 80px -50px rgba(0,0,0,.9)}
-  .term .bar{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--line)}
-  .term .bar i{width:11px;height:11px;border-radius:50%;display:inline-block}
-  .term .bar i:nth-child(1){background:#3a342b} .term .bar i:nth-child(2){background:#3a342b} .term .bar i:nth-child(3){background:#3a342b}
-  .term .bar span{margin-left:8px;font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.06em}
-  .term .body{padding:22px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.85}
-  .term .p{color:var(--faint);margin-top:16px} .term .p:first-child{margin-top:0}
-  .term .ps{color:var(--gold)}
-  .term .cmd{color:var(--text);display:block;margin-top:5px;white-space:pre-wrap;word-break:break-word}
-  .term .note{color:var(--green);margin-top:18px;display:flex;gap:9px;align-items:flex-start}
-  .term .note svg{width:14px;height:14px;flex:none;margin-top:3px;stroke:var(--green);fill:none;stroke-width:1.8}
+  .term{background:var(--term-bg);border:1px solid var(--line-2);border-radius:16px;overflow:hidden;box-shadow:0 40px 80px -52px var(--shadow)}
+  .term .bar{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .term .bar i{width:11px;height:11px;border-radius:50%;display:inline-block;background:rgba(255,255,255,.16)}
+  .term .bar span{margin-left:8px;font-family:var(--mono);font-size:11px;color:var(--term-faint);letter-spacing:.06em}
+  .term .body{padding:22px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.85;color:var(--term-text)}
+  .term .p{color:var(--term-faint);margin-top:16px}.term .p:first-child{margin-top:0}
+  .term .ps{color:var(--term-accent)}
+  .term .cmd{color:var(--term-text);display:block;margin-top:5px;white-space:pre-wrap;word-break:break-word}
+  .term .note{color:var(--term-accent);margin-top:18px;display:flex;gap:9px;align-items:flex-start}
+  .term .note svg{width:14px;height:14px;flex:none;margin-top:3px;stroke:var(--term-accent);fill:none;stroke-width:1.8}
   .qs-copy h3{font-family:var(--serif);font-weight:500;font-size:clamp(1.6rem,3vw,2.3rem);line-height:1.08;letter-spacing:-.02em;margin-bottom:18px}
   .qs-copy p{color:var(--dim);margin-bottom:16px;max-width:34em}
-  .qs-copy .num{font-family:var(--serif);color:var(--gold-soft);font-style:italic}
+  .qs-copy .num{font-family:var(--serif);color:var(--accent-deep);font-style:italic}
+  :root[data-theme="dark"] .qs-copy .num{color:var(--accent-soft)}
 
-  /* faq */
   .faq{max-width:820px}
   details{border-top:1px solid var(--line);padding:6px 0}
   details:last-child{border-bottom:1px solid var(--line)}
-  summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;
-    padding:24px 4px;font-family:var(--serif);font-weight:500;font-size:clamp(1.1rem,2vw,1.4rem);letter-spacing:-.01em;color:var(--text)}
+  summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 4px;
+    font-family:var(--serif);font-weight:500;font-size:clamp(1.1rem,2vw,1.4rem);letter-spacing:-.01em;color:var(--text)}
   summary::-webkit-details-marker{display:none}
-  summary .pl{flex:none;width:26px;height:26px;border-radius:8px;border:1px solid var(--line-2);
-    display:grid;place-items:center;color:var(--gold);transition:transform .3s,background .3s}
-  details[open] summary .pl{transform:rotate(45deg);background:rgba(244,179,51,.12)}
-  summary .pl svg{width:13px;height:13px}
+  summary .pl{flex:none;width:26px;height:26px;border-radius:8px;border:1px solid var(--line-2);display:grid;place-items:center;color:var(--accent);transition:transform .3s,background .3s}
+  details[open] summary .pl{transform:rotate(45deg);background:var(--accent-tint)}
+  summary .pl svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
   details .ans{padding:0 4px 26px;color:var(--dim);font-size:1.02rem;line-height:1.7;max-width:64ch}
-  details .ans code{font-family:var(--mono);font-size:.86em;color:var(--gold-soft);background:rgba(244,179,51,.08);padding:2px 6px;border-radius:5px}
+  details .ans code{font-family:var(--mono);font-size:.86em;color:var(--accent-deep);background:var(--accent-tint);padding:2px 6px;border-radius:5px}
+  :root[data-theme="dark"] details .ans code{color:var(--accent-soft)}
 
-  /* closing cta */
   .closing{text-align:center;padding:96px 0 30px}
   .closing h2{font-family:var(--serif);font-weight:500;font-size:clamp(2.2rem,5vw,4rem);line-height:1.02;letter-spacing:-.02em}
-  .closing h2 i{font-style:italic;color:var(--gold-soft)}
+  .closing h2 i{font-style:italic;color:var(--em)}
   .closing p{color:var(--dim);margin:20px auto 0;max-width:30em}
   .closing .cta{justify-content:center}
 
-  /* footer */
   footer{border-top:1px solid var(--line);margin-top:60px;padding:40px 0 56px;position:relative;z-index:2}
   footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:22px;align-items:center}
   footer .l{font-family:var(--mono);font-size:11.5px;color:var(--faint);letter-spacing:.04em}
   footer nav{display:flex;gap:24px;flex-wrap:wrap}
   footer nav a{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--dim);text-decoration:none;transition:color .2s}
-  footer nav a:hover{color:var(--gold-soft)}
+  footer nav a:hover{color:var(--accent-deep)}
+  :root[data-theme="dark"] footer nav a:hover{color:var(--accent-soft)}
 
-  /* reveal */
   .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
   .reveal.is-in{opacity:1;transform:none}
   .stg>*{opacity:0;transform:translateY(18px);animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
   @keyframes rise{to{opacity:1;transform:none}}
 
-  /* responsive */
   @media (max-width:980px){
     .hero-grid{grid-template-columns:1fr;gap:46px}
-    .paper-wrap{max-width:420px;margin:0 auto}
-    .paper{transform:rotateY(-7deg) rotateX(3deg)}
+    .paper-wrap{max-width:440px;margin:0 auto}
+    .ieee{transform:rotateY(-6deg) rotateX(3deg)}
     .flow{grid-template-columns:repeat(2,1fr)}
     .feat{grid-template-columns:repeat(2,1fr)}
     .qs{grid-template-columns:1fr;gap:34px}
@@ -320,9 +320,7 @@
 </head>
 <body>
 
-<div class="atmo" aria-hidden="true">
-  <div class="glow g1"></div><div class="glow g2"></div><div class="grid"></div>
-</div>
+<div class="atmo" aria-hidden="true"><div class="glow g1"></div><div class="glow g2"></div><div class="grid"></div></div>
 <div class="grain" aria-hidden="true"></div>
 
 <header class="nav">
@@ -331,22 +329,27 @@
       <span class="mk"><b>a.</b></span>
       <span class="nm">arXiv Review Paper <i>Harness</i></span>
     </a>
-    <nav class="links">
-      <a href="#workflow">Workflow</a>
-      <a href="#why">Why</a>
-      <a href="#examples">Examples</a>
-      <a href="#faq">FAQ</a>
-    </nav>
-    <a class="ghbtn" href="https://github.com/appautomaton/latex-arxiv-SKILL" target="_blank" rel="noopener">
-      <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-      <span id="stars">Star</span>
-    </a>
+    <div class="navright">
+      <nav class="links">
+        <a href="#workflow">Workflow</a>
+        <a href="#why">Why</a>
+        <a href="#examples">Examples</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <button class="tbtn" id="themeToggle" aria-label="Toggle day or night theme" title="Toggle day / night">
+        <svg class="ic-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+        <svg class="ic-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M19.4 4.6l-1.7 1.7M6.3 17.7l-1.7 1.7"/></svg>
+      </button>
+      <a class="ghbtn" href="https://github.com/appautomaton/latex-arxiv-SKILL" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span id="stars">Star</span>
+      </a>
+    </div>
   </div>
 </header>
 
 <main id="top">
 
-  <!-- HERO -->
   <section class="hero">
     <div class="wrap">
       <div class="hero-grid">
@@ -369,24 +372,24 @@
         </div>
 
         <div class="paper-wrap stg" style="animation-delay:.3s">
-          <div class="stamp">
-            <div class="n">100%</div>
-            <div class="l">cites verified</div>
-          </div>
-          <div class="paper">
-            <div class="ptag">Review Article · Preprint</div>
-            <h3>A Survey of State-of-the-Art Generative Image Models</h3>
-            <div class="auth">generated · IEEEtran · compiles to main.pdf</div>
-            <div class="rule"></div>
-            <div class="cols">
+          <div class="stamp"><div class="n">100%</div><div class="l">cites verified</div></div>
+          <div class="ieee">
+            <div class="tt">A Survey of State-of-the-Art<br/>Generative Image Models</div>
+            <div class="au">Generated with the arXiv Review Paper Harness</div>
+            <div class="vn">IEEEtran · review article · preprint</div>
+            <div class="twocol">
               <div class="col">
-                <div class="ln"></div><div class="ln"></div><div class="ln"></div>
-                <div class="ln hl"></div><div class="ln"></div><div class="ln s"></div>
-                <div class="cite"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 8.5l3 3 6-7"/></svg>verified [12]</div>
+                <p class="abs"><b>Abstract&mdash;</b>This review surveys diffusion, autoregressive, and masked generative models for high-fidelity image synthesis, with a unified taxonomy and evaluation protocol.</p>
+                <div class="sech">I. Introduction</div>
+                <div class="para lg"></div>
+                <div class="refline">prior work <span class="ref">[12]</span> established the</div>
+                <div class="para sm"></div>
               </div>
               <div class="col">
-                <div class="ln"></div><div class="ln"></div><div class="ln s"></div>
-                <div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln s"></div>
+                <div class="sech">II. Model Families</div>
+                <div class="para"></div>
+                <div class="fig"><div class="figbox"></div><div class="cap">Fig. 1. Taxonomy of model families.</div></div>
+                <div class="para sm"></div>
               </div>
             </div>
           </div>
@@ -395,17 +398,15 @@
     </div>
   </section>
 
-  <!-- STATS -->
   <div class="stats reveal">
     <div class="wrap">
-      <div class="stat"><div class="n gold">100%</div><div class="l">citations verified against a live source</div></div>
+      <div class="stat"><div class="n a">100%</div><div class="l">citations verified against a live source</div></div>
       <div class="stat"><div class="n">2</div><div class="l">prompts to a complete first draft</div></div>
-      <div class="stat"><div class="n green">0</div><div class="l">hallucinated or fabricated references</div></div>
+      <div class="stat"><div class="n a">0</div><div class="l">hallucinated or fabricated references</div></div>
       <div class="stat"><div class="n">4</div><div class="l">portable skills in the bundle</div></div>
     </div>
   </div>
 
-  <!-- WORKFLOW -->
   <section id="workflow" class="sec">
     <div class="wrap">
       <div class="sec-head reveal">
@@ -416,17 +417,16 @@
       <div class="flow reveal">
         <div class="step"><div class="k">01</div><h4>Research snapshot</h4><p>Topic becomes keywords, then 10 to 20 key papers. No prose yet.</p></div>
         <div class="step"><div class="k">02</div><h4>Scaffold</h4><p>An IEEEtran two-column project, compiled early to catch errors.</p></div>
-        <div class="step gate"><div class="k">03 · gate</div><h4>Approval</h4><p>You approve the plan and outline. Nothing is written until you do.<span class="badge-min g">human in the loop</span></p></div>
+        <div class="step gate"><div class="k">03 · gate</div><h4>Approval</h4><p>You approve the plan and outline. Nothing is written until you do.<span class="badge-min">human in the loop</span></p></div>
         <div class="step"><div class="k">04</div><h4>Issues CSV</h4><p>The execution contract. One tracked row per section and task.</p></div>
         <div class="step"><div class="k">05</div><h4>Write &amp; verify</h4><p>Each section researched and drafted, every citation checked against a live source.</p></div>
         <div class="step"><div class="k">06</div><h4>Rhythm refinement</h4><p>Sentence and paragraph length varied for readability, citations preserved.</p></div>
         <div class="step"><div class="k">07</div><h4>QA &amp; compile</h4><p>Overfull boxes fixed. Zero undefined citations before delivery.</p></div>
-        <div class="step out"><div class="k">08 · output</div><h4>Ready for arXiv</h4><p>main.pdf and a verified ref.bib.<span class="badge-min v">compiles clean</span></p></div>
+        <div class="step out"><div class="k">08 · output</div><h4>Ready for arXiv</h4><p>main.pdf and a verified ref.bib.<span class="badge-min">compiles clean</span></p></div>
       </div>
     </div>
   </section>
 
-  <!-- WHY -->
   <section id="why" class="sec">
     <div class="wrap">
       <div class="sec-head reveal">
@@ -435,35 +435,16 @@
         <p>Guardrails that forbid the two things agents are worst at, writing before a plan exists and citing sources they have not checked.</p>
       </div>
       <div class="feat reveal">
-        <div class="card">
-          <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg></div>
-          <h4>Hard quality gates</h4><p>No prose before approval. Nothing marked done until its acceptance criteria are met.</p>
-        </div>
-        <div class="card">
-          <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5 11-12"/></svg></div>
-          <h4>Verified citations only</h4><p>Every citation is checked against a live source before it enters <code>ref.bib</code>. No fabricated references.</p>
-        </div>
-        <div class="card">
-          <div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></div>
-          <h4>Issue-driven execution</h4><p>A CSV is the single source of truth. Scope grows by splitting issues, never by quietly guessing.</p>
-        </div>
-        <div class="card">
-          <div class="ic"><svg viewBox="0 0 24 24"><path d="M8 4l-4 8 4 8M16 4l4 8-4 8"/></svg></div>
-          <h4>Deterministic scripts</h4><p>Scaffolding, arXiv discovery, validation, and compile run the same way on every pass.</p>
-        </div>
-        <div class="card">
-          <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M5.5 5.5l13 13M18.5 5.5l-13 13"/></svg></div>
-          <h4>Runs where you work</h4><p>One portable Agent Skill bundle, equally at home in Codex CLI and Claude Code.</p>
-        </div>
-        <div class="card">
-          <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 3h9l5 5v13H6z"/><path d="M14 3v6h6"/><path d="M9 14l2 2 4-4"/></svg></div>
-          <h4>Compiles or it is not done</h4><p>Delivery requires a clean <code>pdflatex</code> and <code>bibtex</code> build with no warnings.</p>
-        </div>
+        <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg></div><h4>Hard quality gates</h4><p>No prose before approval. Nothing marked done until its acceptance criteria are met.</p></div>
+        <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5 11-12"/></svg></div><h4>Verified citations only</h4><p>Every citation is checked against a live source before it enters <code>ref.bib</code>. No fabricated references.</p></div>
+        <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></div><h4>Issue-driven execution</h4><p>A CSV is the single source of truth. Scope grows by splitting issues, never by quietly guessing.</p></div>
+        <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M8 4l-4 8 4 8M16 4l4 8-4 8"/></svg></div><h4>Deterministic scripts</h4><p>Scaffolding, arXiv discovery, validation, and compile run the same way on every pass.</p></div>
+        <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M5.5 5.5l13 13M18.5 5.5l-13 13"/></svg></div><h4>Runs where you work</h4><p>One portable Agent Skill bundle, equally at home in Codex CLI and Claude Code.</p></div>
+        <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M6 3h9l5 5v13H6z"/><path d="M14 3v6h6"/><path d="M9 14l2 2 4-4"/></svg></div><h4>Compiles or it is not done</h4><p>Delivery requires a clean <code>pdflatex</code> and <code>bibtex</code> build with no warnings.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- EXAMPLES -->
   <section id="examples" class="sec">
     <div class="wrap">
       <div class="sec-head reveal">
@@ -473,42 +454,25 @@
       </div>
       <div class="ex reveal">
         <a class="ex-card" href="https://github.com/appautomaton/latex-arxiv-SKILL/tree/main/example/v0-single-SKILL" target="_blank" rel="noopener">
-          <div class="mini">
-            <div class="mt">Generative Image Models</div>
-            <div class="mr"></div>
-            <div class="mc">
-              <div><div class="ln"></div><div class="ln"></div><div class="ln hl"></div><div class="ln"></div></div>
-              <div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div>
-            </div>
-          </div>
-          <div>
-            <div class="v">v0 · single skill</div>
-            <h4>A survey of SOTA generative image models</h4>
-            <div class="meta"><span class="chip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 8.5l3 3 6-7"/></svg>55 verified citations</span></div>
-            <span class="go">Open in repo →</span>
-          </div>
+          <div class="mini"><div class="mt">Generative Image Models</div><div class="mr"></div><div class="mc">
+            <div><div class="ln"></div><div class="ln"></div><div class="ln hl"></div><div class="ln"></div></div>
+            <div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div></div></div>
+          <div><div class="v">v0 · single skill</div><h4>A survey of SOTA generative image models</h4>
+            <div class="meta"><span class="chip"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg>55 verified citations</span></div>
+            <span class="go">Open in repo →</span></div>
         </a>
         <a class="ex-card" href="https://github.com/appautomaton/latex-arxiv-SKILL/tree/main/example/v0.5-sqlite-multi-SKILLs/video-world-simulators-3d4d-review" target="_blank" rel="noopener">
-          <div class="mini">
-            <div class="mt">Video World Simulators</div>
-            <div class="mr"></div>
-            <div class="mc">
-              <div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln hl"></div></div>
-              <div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div>
-            </div>
-          </div>
-          <div>
-            <div class="v">v0.5 · multi skill</div>
-            <h4>Video world simulators in 3D and 4D</h4>
-            <div class="meta"><span class="chip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 8.5l3 3 6-7"/></svg>81 verified citations</span></div>
-            <span class="go">Open in repo →</span>
-          </div>
+          <div class="mini"><div class="mt">Video World Simulators</div><div class="mr"></div><div class="mc">
+            <div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln hl"></div></div>
+            <div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div></div></div>
+          <div><div class="v">v0.5 · multi skill</div><h4>Video world simulators in 3D and 4D</h4>
+            <div class="meta"><span class="chip"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg>81 verified citations</span></div>
+            <span class="go">Open in repo →</span></div>
         </a>
       </div>
     </div>
   </section>
 
-  <!-- QUICKSTART -->
   <section id="quickstart" class="sec">
     <div class="wrap">
       <div class="qs">
@@ -531,7 +495,6 @@
     </div>
   </section>
 
-  <!-- FAQ -->
   <section id="faq" class="sec">
     <div class="wrap">
       <div class="sec-head reveal">
@@ -540,22 +503,21 @@
       </div>
       <div class="faq reveal">
         <details open>
-          <summary>How does it prevent hallucinated or invented citations?<span class="pl"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v12M2 8h12"/></svg></span></summary>
+          <summary>How does it prevent hallucinated or invented citations?<span class="pl"><svg viewBox="0 0 16 16"><path d="M8 2v12M2 8h12"/></svg></span></summary>
           <div class="ans">Guardrails, built into the workflow. Every citation is verified against a live source before it enters <code>ref.bib</code>, and any claim without evidence becomes a TODO rather than a fabricated reference.</div>
         </details>
         <details>
-          <summary>Can I use it on an existing LaTeX project?<span class="pl"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v12M2 8h12"/></svg></span></summary>
+          <summary>Can I use it on an existing LaTeX project?<span class="pl"><svg viewBox="0 0 16 16"><path d="M8 2v12M2 8h12"/></svg></span></summary>
           <div class="ans">Yes. Point it at your project and a citation-validation pass audits and repairs <code>ref.bib</code> without re-scaffolding anything.</div>
         </details>
         <details>
-          <summary>Can it write original or experimental research papers, not just reviews?<span class="pl"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v12M2 8h12"/></svg></span></summary>
+          <summary>Can it write original or experimental research papers, not just reviews?<span class="pl"><svg viewBox="0 0 16 16"><path d="M8 2v12M2 8h12"/></svg></span></summary>
           <div class="ans">Yes, with a little tailoring. Review and survey articles are its sweet spot out of the box, but nothing locks it there. Shape the plan and inputs to your goal, and the same gated workflow extends to original or experimental work.</div>
         </details>
       </div>
     </div>
   </section>
 
-  <!-- CLOSING -->
   <section class="closing">
     <div class="wrap">
       <div class="reveal">
@@ -588,7 +550,6 @@
 </footer>
 
 <script>
-  // scroll reveal
   (function(){
     var els=document.querySelectorAll('.reveal');
     if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('is-in')});return;}
@@ -597,17 +558,27 @@
     },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
     els.forEach(function(e){io.observe(e)});
   })();
-  // live star count
+
+  (function(){
+    var root=document.documentElement, key='arxh-theme', meta=document.getElementById('meta-theme');
+    var colors={light:'#eceee3',dark:'#0a120d'};
+    function cur(){return root.getAttribute('data-theme')==='dark'?'dark':'light';}
+    function apply(t){root.setAttribute('data-theme',t); if(meta)meta.setAttribute('content',colors[t]);}
+    var btn=document.getElementById('themeToggle');
+    if(btn) btn.addEventListener('click',function(){var n=cur()==='dark'?'light':'dark'; apply(n); try{localStorage.setItem(key,n);}catch(e){}});
+    try{
+      var mq=matchMedia('(prefers-color-scheme: dark)');
+      mq.addEventListener('change',function(e){ try{ if(!localStorage.getItem(key)) apply(e.matches?'dark':'light'); }catch(_){}});
+    }catch(e){}
+    apply(cur());
+  })();
+
   (function(){
     try{
       fetch('https://api.github.com/repos/appautomaton/latex-arxiv-SKILL')
         .then(function(r){return r.json()})
-        .then(function(d){
-          if(d&&typeof d.stargazers_count==='number'){
-            var n=d.stargazers_count, t=n>=1000?(n/1000).toFixed(1)+'k':String(n);
-            document.getElementById('stars').textContent='Star · '+t;
-          }
-        }).catch(function(){});
+        .then(function(d){if(d&&typeof d.stargazers_count==='number'){var n=d.stargazers_count,t=n>=1000?(n/1000).toFixed(1)+'k':String(n);document.getElementById('stars').textContent='Star · '+t;}})
+        .catch(function(){});
     }catch(e){}
   })();
 </script>
