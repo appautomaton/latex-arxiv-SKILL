@@ -78,11 +78,12 @@
   .aura{position:fixed;left:0;top:0;width:680px;height:680px;border-radius:50%;pointer-events:none;z-index:0;
     background:radial-gradient(closest-side,var(--glow-2),transparent 70%);filter:blur(64px);opacity:.9;
     transform:translate3d(50vw,32vh,0) translate(-50%,-50%);will-change:transform}
-  .hexbg{position:absolute;inset:0;background-image:var(--hex-img);background-repeat:repeat;background-size:34px 60px;
-    animation:hexpulse 7s ease-in-out infinite;
-    -webkit-mask-image:radial-gradient(ellipse 78% 58% at 50% 0%,#000,transparent 70%);
-    mask-image:radial-gradient(ellipse 78% 58% at 50% 0%,#000,transparent 70%)}
-  @keyframes hexpulse{0%,100%{background-size:30px 52.5px}50%{background-size:40px 70px}}
+  .hexbg{position:absolute;top:0;left:0;width:100%;height:780px;overflow:hidden;
+    -webkit-mask-image:radial-gradient(ellipse 80% 65% at 50% 0%,#000,transparent 72%);
+    mask-image:radial-gradient(ellipse 80% 65% at 50% 0%,#000,transparent 72%)}
+  .hexbg::before{content:"";position:absolute;inset:-25%;background-image:var(--hex-img);background-repeat:repeat;
+    background-size:34px 60px;transform-origin:center;will-change:transform;animation:hexpulse 8s ease-in-out infinite}
+  @keyframes hexpulse{0%,100%{transform:scale(.9)}50%{transform:scale(1.1)}}
   .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:var(--grain-opacity);mix-blend-mode:var(--grain-blend);
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
