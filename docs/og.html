@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..600&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0a120d; --text:#eef4ec; --dim:#9fb3a6; --faint:#728579;
+    --mint:#76dcab; --mint-soft:#a7ebc8; --deep:#3fae78;
+    --paper:#f4f4ea; --paper-ink:#1a201a; --paper-line:rgba(26,32,26,.16); --paper-faint:#8b9684;
+    --serif:"Fraunces",Georgia,serif; --sans:"Hanken Grotesk",sans-serif; --mono:"IBM Plex Mono",monospace;
+  }
+  html,body{width:1200px;height:630px;overflow:hidden}
+  body{background:var(--bg);font-family:var(--sans);color:var(--text);position:relative}
+
+  .bg-glow{position:absolute;width:780px;height:780px;border-radius:50%;top:-300px;right:-260px;
+    background:radial-gradient(closest-side,rgba(118,220,171,.20),transparent 70%);filter:blur(20px)}
+  .bg-glow.b{top:auto;bottom:-360px;left:-260px;right:auto;width:680px;height:680px;
+    background:radial-gradient(closest-side,rgba(63,174,120,.12),transparent 70%)}
+  .hex{position:absolute;inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cpath fill='%2376dcab' fill-opacity='0.05' fill-rule='evenodd' d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.85V49h-2z'/%3E%3C/svg%3E");
+    background-size:34px 60px;
+    -webkit-mask-image:radial-gradient(ellipse 64% 80% at 90% 4%,#000,transparent 60%);
+    mask-image:radial-gradient(ellipse 64% 80% at 90% 4%,#000,transparent 60%)}
+  .frame{position:absolute;inset:26px;border:1px solid rgba(238,244,236,.10);border-radius:18px;pointer-events:none}
+
+  .left{position:absolute;left:78px;top:74px;bottom:74px;width:600px;display:flex;flex-direction:column;justify-content:space-between;z-index:4}
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand .mk{width:42px;height:42px;border-radius:11px;background:var(--mint);display:flex;align-items:center;justify-content:center}
+  .brand .mk b{font-family:var(--serif);font-weight:600;font-size:23px;color:#06160e}
+  .brand .nm{font-family:var(--serif);font-weight:600;font-size:25px;letter-spacing:.01em}
+  .brand .nm i{font-style:italic;color:var(--mint-soft)}
+
+  .eyebrow{font-family:var(--mono);font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:var(--mint);
+    display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .eyebrow::before{content:"";width:32px;height:1px;background:var(--mint);opacity:.6}
+  h1{font-family:var(--serif);font-weight:500;font-size:71px;line-height:.99;letter-spacing:-.02em}
+  h1 .em{font-style:italic;color:var(--mint-soft);position:relative;white-space:nowrap}
+  h1 .em::after{content:"";position:absolute;left:0;right:0;bottom:.06em;height:5px;border-radius:3px;
+    background:linear-gradient(90deg,var(--mint),transparent)}
+  .sub{margin-top:30px;font-size:23px;line-height:1.5;color:var(--dim);max-width:30ch}
+  .sub b{color:var(--text);font-weight:600}
+
+  .foot{display:flex;align-items:center;gap:16px;font-family:var(--mono);font-size:16px;color:var(--faint);letter-spacing:.03em}
+  .foot .dot{width:5px;height:5px;border-radius:50%;background:var(--deep)}
+  .foot .url{color:var(--mint-soft)}
+
+  .sheet{position:absolute;top:118px;right:88px;width:302px;height:386px;background:var(--paper);color:var(--paper-ink);
+    border-radius:7px;padding:22px 22px;font-family:"Times New Roman",var(--serif);transform:rotate(4deg);z-index:2;overflow:hidden;
+    box-shadow:0 50px 90px -34px rgba(0,0,0,.72),0 0 0 1px rgba(255,255,255,.05)}
+  .sheet .pt{text-align:center;font-weight:700;font-size:13px;line-height:1.2;overflow-wrap:break-word}
+  .sheet .pa{text-align:center;font-style:italic;font-size:8.5px;color:var(--paper-faint);margin:7px 0 2px}
+  .sheet .pv{text-align:center;font-family:var(--mono);font-size:7px;letter-spacing:.08em;text-transform:uppercase;color:var(--paper-faint);margin-bottom:14px}
+  .sheet .cols{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  .sheet .sh{text-align:center;font-variant:small-caps;font-weight:700;font-size:9.5px;letter-spacing:.05em;margin:0 0 6px}
+  .sheet .ln{height:2px;border-radius:1px;background:var(--paper-line);margin-bottom:7px}
+  .sheet .ln.s{width:58%}
+  .sheet .ln.hl{background:rgba(63,174,120,.6)}
+  .sheet .box{height:46px;border:1px solid var(--paper-line);border-radius:3px;margin:9px 0 6px;
+    background:repeating-linear-gradient(45deg,var(--paper-line) 0 1px,transparent 1px 8px)}
+
+  .seal{position:absolute;top:70px;right:54px;width:86px;height:86px;border-radius:50%;background:var(--deep);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:3;transform:rotate(-6deg);
+    box-shadow:0 22px 44px -16px rgba(63,174,120,.6),0 0 0 7px rgba(10,18,13,.95)}
+  .seal svg{width:34px;height:34px;stroke:#06160e;fill:none;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+  .seal .pct{font-family:var(--serif);font-weight:600;font-size:15px;color:#06160e;margin-top:1px;line-height:1}
+</style>
+</head>
+<body>
+  <div class="hex"></div>
+  <div class="bg-glow"></div>
+  <div class="bg-glow b"></div>
+  <div class="frame"></div>
+
+  <div class="left">
+    <div class="brand">
+      <span class="mk"><b>a.</b></span>
+      <span class="nm">arXiv Review Paper <i>Harness</i></span>
+    </div>
+    <div>
+      <div class="eyebrow">Agentic harness · Codex CLI / Claude Code</div>
+      <h1>Write the review paper.<br/><span class="em">Verify every citation.</span></h1>
+      <div class="sub">A highly customizable agentic harness for <b>arXiv-ready ML/AI review papers</b>, with verified BibTeX citations.</div>
+    </div>
+    <div class="foot">
+      <span class="url">github.com/appautomaton/latex-arxiv-SKILL</span>
+      <span class="dot"></span><span>MIT</span>
+    </div>
+  </div>
+
+  <div class="sheet">
+    <div class="pt">A Survey of Generative<br/>Image Models</div>
+    <div class="pa">Generated with the arXiv Review Paper Harness</div>
+    <div class="pv">IEEEtran · preprint</div>
+    <div class="cols">
+      <div>
+        <div class="sh">I. Introduction</div>
+        <div class="ln"></div><div class="ln"></div><div class="ln hl"></div><div class="ln"></div><div class="ln s"></div>
+        <div class="sh" style="margin-top:12px">III. Evaluation</div>
+        <div class="ln"></div><div class="ln s"></div>
+      </div>
+      <div>
+        <div class="sh">II. Model Families</div>
+        <div class="ln"></div><div class="ln"></div>
+        <div class="box"></div>
+        <div class="ln"></div><div class="ln s"></div>
+      </div>
+    </div>
+  </div>
+  <div class="seal">
+    <svg viewBox="0 0 24 24"><path d="M4 12.5l5 5 11-12"/></svg>
+    <span class="pct">100%</span>
+  </div>
+</body>
+</html>
