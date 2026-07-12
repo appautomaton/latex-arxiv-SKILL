@@ -279,12 +279,12 @@ These conventions are the default for **team-shared** Skills in this repo.
 - **Codex**: `.codex/skills/<skill-name>/SKILL.md`
 - **Claude Code**: `.claude/skills/<skill-name>/SKILL.md`
 
-If a Skill is intended to work in both tools, keep the Skill content aligned across both roots. Prefer keeping differences limited to tool-specific frontmatter fields (e.g., `metadata.short-description` vs `allowed-tools`).
+This repo authors skills once under `.codex/` and serves both tools through a `.claude -> .codex` symlink. Keep tool-specific differences limited to frontmatter fields that the other tool ignores (e.g., `metadata.short-description` vs `allowed-tools`).
 
 ### Naming
 
 - Use `kebab-case` for `name`, keep ≤ 64 chars.
-- Prefix repo Skills with `ad-` (agent-designer), e.g. `ad-plan`, `ad-issue-csv`, to reduce collisions with user/global Skills.
+- Use descriptive, collision-resistant names without a repo prefix (e.g., `arxiv-paper-writer`, `latex-rhythm-refiner`).
 
 ### What belongs in-repo vs personal
 

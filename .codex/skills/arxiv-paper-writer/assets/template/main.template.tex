@@ -37,7 +37,11 @@
 \usepackage{colortbl}                % For colored table cells
 
 % TikZ libraries for specific diagram types
-\usetikzlibrary{shapes.geometric,arrows,positioning,fit,backgrounds,calc,decorations.pathreplacing,decorations.markings,patterns,circuits.logic.US,matrix,chains}
+\usetikzlibrary{shapes.geometric,arrows,positioning,fit,backgrounds,calc,decorations.pathreplacing,decorations.markings,patterns,matrix,chains}
+
+% Marks the first bibliography page so compile_paper.py --report-page-counts
+% can separate main-text pages from reference pages. Do not remove.
+\AddToHook{env/thebibliography/begin}{\label{ReferencesStart}}
 
 % Table enhancements
 \usepackage{threeparttable}          % For table notes
@@ -52,13 +56,13 @@
 }
 \makeatother
 
-% Define custom colors for visualizations
-% These are common colors used in AI/ML papers
-\definecolor{qubitblue}{RGB}{70,130,180}      % Blue for primary elements
-\definecolor{controlred}{RGB}{220,20,60}      % Red for control elements
-\definecolor{aigreen}{RGB}{50,150,50}         % Green for AI components
-\definecolor{quantumpurple}{RGB}{128,0,128}   % Purple for quantum elements
-\definecolor{errororange}{RGB}{255,140,0}     % Orange for error highlighting
+% Define custom accent colors for visualizations
+% Use as low-saturation fills (e.g., accentblue!15) per the visual guidance
+\definecolor{accentblue}{RGB}{70,130,180}     % Blue for primary elements
+\definecolor{accentred}{RGB}{220,20,60}       % Red for contrast or alerts
+\definecolor{accentgreen}{RGB}{50,150,50}     % Green for secondary elements
+\definecolor{accentpurple}{RGB}{128,0,128}    % Purple for tertiary elements
+\definecolor{accentorange}{RGB}{255,140,0}    % Orange for highlighting
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DOCUMENT BEGINS
@@ -106,12 +110,12 @@
 % ABSTRACT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-[Your abstract should be a single paragraph (150-250 words) that summarizes your work. It should clearly state: 
-(1) the problem addressed, 
-(2) your approach/methodology, 
-(3) key results, and 
-(4) main conclusions or implications. 
-Be specific and quantitative about your findings. Avoid citations in the abstract.]
+[Your abstract should be a single paragraph (150-250 words) that summarizes the review. It should clearly state:
+(1) the topic and why it matters now,
+(2) the scope and how the literature is organized,
+(3) the key findings or comparisons the review surfaces, and
+(4) open challenges and takeaways.
+Be specific about coverage and time window. Avoid citations in the abstract.]
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -191,9 +195,9 @@ Example citation: Previous work \cite{author2023paper} has shown...]
     ]
         % Add TikZ code here for your diagram
         % Example:
-        \node[box=qubitblue] (node1) {Input};
-        \node[box=aigreen, below=of node1] (node2) {Process};
-        \node[box=quantumpurple, below=of node2] (node3) {Output};
+        \node[box=accentblue] (node1) {Input};
+        \node[box=accentgreen, below=of node1] (node2) {Process};
+        \node[box=accentpurple, below=of node2] (node3) {Output};
         
         % Connections
         \draw[->, thick] (node1) -- (node2);

@@ -88,7 +88,7 @@ def main() -> int:
     parser.add_argument(
         "--check-latex",
         action="store_true",
-        help="Check if LaTeX is available and set latex_available accordingly.",
+        help="Print LaTeX tool availability details (latex_available is always recorded in the plan frontmatter).",
     )
     parser.add_argument(
         "--with-literature-notes",

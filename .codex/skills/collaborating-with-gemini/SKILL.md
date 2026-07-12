@@ -9,6 +9,8 @@ metadata:
 
 Use Gemini CLI as a collaborator while keeping Codex as the primary implementer.
 
+> **Host note**: this skill is written for a Codex host. When running in another host (e.g., Claude Code), adapt Codex-specific details such as the command-runner timeout and upload paths.
+
 This skill provides a lightweight bridge script that returns structured JSON and supports multi-turn sessions via `SESSION_ID`.
 
 ## Core rules
@@ -79,7 +81,7 @@ Append this to prompts when requesting code:
 
 ### 4) Sharing clipboard screenshots with Gemini
 
-Gemini can only read files inside the workspace root (`--cd`). Codex saves clipboard PNGs into the OS temp directory (e.g. `${TMPDIR:-/tmp}`), which Gemini can’t access, and it may refuse ignored paths (e.g. `tmp/`). Copy the image into `.codex_uploads/`, then reference that path in your prompt. Delete screenshots when done. **Do not add `.codex_uploads/` to `.gitignore`**—Gemini refuses to read ignored paths.
+Gemini can only read files inside the workspace root (`--cd`). Codex saves clipboard PNGs into the OS temp directory (e.g. `${TMPDIR:-/tmp}`), which Gemini can’t access, and it may refuse ignored paths (e.g. `tmp/`). Copy the image into `.codex_uploads/`, then reference that path in your prompt. Delete screenshots when done. **Do not add `.codex_uploads/` to `.gitignore`**: Gemini refuses to read ignored paths.
 
 ```bash
 mkdir -p .codex_uploads && cp "${TMPDIR:-/tmp}"/codex-clipboard-<id>.png .codex_uploads/

@@ -2,7 +2,9 @@
 name: arxiv-paper-writer
 description: >
   Write LaTeX ML/AI review articles for arXiv using the IEEEtran template
-  and verified BibTeX citations.
+  and verified BibTeX citations. Use when writing, planning, or continuing
+  an arXiv review/survey paper, or when validating and repairing citations
+  in an existing LaTeX project.
 compatibility: >
   Python 3.8+ for scripts. Web browsing/search for citation verification.
   LaTeX is required (pdflatex + bibtex or latexmk).
@@ -32,10 +34,11 @@ metadata:
 - `IEEEtran.cls`
 - `plan/<timestamp>-<slug>.md`, `issues/<timestamp>-<slug>.csv`
 - Figures/tables; `main.pdf`
+- `notes/research-snapshot.md` (Gate 0 research snapshot)
 - `notes/literature-notes.md` (optional per-citation notes)
 - `notes/arxiv-registry.sqlite3` (arXiv metadata/BibTeX cache)
 
-**Conventions**: run `python3 scripts/...` from this skill folder (where `scripts/` lives); `<paper_dir>` is the paper/project root (contains `main.tex`, `ref.bib`, `plan/`, `issues/`, `notes/`). Paths like `plan/...` are under `<paper_dir>`. For arXiv discovery/metadata/BibTeX, use `scripts/arxiv_registry.py` (no ad-hoc curl/wget).
+**Conventions**: run `python3 scripts/...` from this skill folder (where `scripts/` lives); `<paper_dir>` is the paper/project root (contains `main.tex`, `ref.bib`, `plan/`, `issues/`, `notes/`). Paths like `plan/...` are under `<paper_dir>`. Papers are created under `--out <workspace_dir>` (your working directory, never inside this skill folder); pass the same `--out` (and `--name`, if used) to both bootstrap stages. For arXiv discovery/metadata/BibTeX, use `scripts/arxiv_registry.py` (no ad-hoc curl/wget).
 
 ---
 
@@ -55,11 +58,11 @@ metadata:
 ### Gate 0: Research Snapshot + Draft Plan
 1. Confirm constraints (venue, page limit, author block, date range).
 2. Translate the topic into search keywords and run a light discovery pass:
-   10-20 key papers (see `references/research-workflow.md`). After step 4 (once `<paper_dir>` exists), cache arXiv discovery with `arxiv_registry.py search`.
+   10-20 key papers (see `references/research-workflow.md`). After step 4 (once `<paper_dir>` exists), cache arXiv discovery with `arxiv_registry.py search` and save the snapshot to `notes/research-snapshot.md`.
 3. Propose 2-4 candidate titles aligned to the topic.
 4. Scaffold the project folder and draft plan:
    ```bash
-   python3 scripts/bootstrap_ieee_review_paper.py --stage kickoff --topic "<topic>"
+   python3 scripts/bootstrap_ieee_review_paper.py --stage kickoff --topic "<topic>" --out <workspace_dir>
    ```
    This copies LaTeX templates from `assets/template/`; plan/issues are generated from templates in `assets/`.
    Initialize arXiv registry (once): `python3 scripts/arxiv_registry.py --project-dir <paper_dir> init`.
@@ -78,7 +81,7 @@ metadata:
 1. Check kickoff gate in plan: `- [x] User confirmed scope + outline in chat`.
 2. Create issues CSV (script refuses if gate unchecked):
    ```bash
-   python3 scripts/bootstrap_ieee_review_paper.py --stage issues --topic "<topic>" --with-literature-notes
+   python3 scripts/bootstrap_ieee_review_paper.py --stage issues --topic "<topic>" --out <workspace_dir> --with-literature-notes
    ```
 3. Validate:
    ```bash
@@ -168,4 +171,6 @@ Fix `Overfull \hbox` warnings before marking issues `DONE`:
 | Refinement | RFx: apply `latex-rhythm-refiner` skill (after all Wx DONE) |
 | QA | Qx: citation verification, QA checklist, compilation, final review |
 
-Status: `TODO` → `DOING` → `DONE`. Schema validated by `validate_paper_issues.py`.
+Status: `TODO` → `DOING` → `DONE`, or `SKIP` with a reason in `Notes`. Schema validated by `validate_paper_issues.py`.
+
+`Verified_Citations` = the number of unique verified cite keys in the issue's section when it is marked `DONE` (0 for non-writing issues).

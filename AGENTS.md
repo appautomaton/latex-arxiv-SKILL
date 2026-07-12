@@ -2,6 +2,8 @@
 
 This repo uses an **issues‑driven paper writing workflow** for arXiv LaTeX review papers.
 
+These rules govern paper-writing runs. Changes to the harness itself (scripts, skills, docs) follow normal engineering practice.
+
 ## Workflow (issue‑driven)
 1) **Research snapshot (no prose)**: translate topic → keywords → search 10–20 key papers.
 2) **Scaffold project**: create the folder and base LaTeX files; compile early to catch errors.
@@ -10,7 +12,8 @@ This repo uses an **issues‑driven paper writing workflow** for arXiv LaTeX rev
 5) **Gate**: after framework generation, only headings/bullets/seed cites until user approves the plan **and** issues CSV exists (no prose).
 6) **Create issues CSV**: this is the execution contract; validate it and update as it evolves.
 7) **Write per issue**: research → write → verify citations → update issue status + verified counts.
-8) **QA + compile**: run internal QA checks and compile; fix errors before delivery.
+8) **Refine rhythm**: after all writing issues are DONE, apply the `latex-rhythm-refiner` skill section by section.
+9) **QA + compile**: run internal QA checks and compile; fix errors before delivery.
 
 ## Non‑negotiable rules
 - **No prose before approval**: do not write into `main.tex` until plan approved and issues CSV exists.

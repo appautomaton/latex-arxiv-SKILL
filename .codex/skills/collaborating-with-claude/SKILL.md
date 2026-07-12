@@ -9,6 +9,8 @@ metadata:
 
 Use Claude Code CLI as a collaborator while keeping Codex as the primary implementer.
 
+> **Host note**: this skill is written for a Codex host. If you are already running inside Claude Code, do not bridge to Claude Code (that would be circular); use your own capabilities or another collaborator skill.
+
 This skill provides a lightweight bridge script (`scripts/claude_bridge.py`) that returns structured JSON and supports multi-turn sessions via `SESSION_ID`.
 
 ## When to use
