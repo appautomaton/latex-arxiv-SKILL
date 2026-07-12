@@ -1,5 +1,6 @@
 # arXiv Review Paper Harness
 
+[![CI](https://github.com/appautomaton/latex-arxiv-SKILL/actions/workflows/ci.yml/badge.svg)](https://github.com/appautomaton/latex-arxiv-SKILL/actions/workflows/ci.yml)
 [![GitHub stars](https://img.shields.io/github/stars/appautomaton/latex-arxiv-SKILL?style=flat&color=f5b400&logo=github)](https://github.com/appautomaton/latex-arxiv-SKILL/stargazers)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-compatible-D97757?logo=anthropic&logoColor=white)](https://www.anthropic.com/claude-code)
 [![OpenAI Codex](https://img.shields.io/badge/OpenAI_Codex-compatible-412991?logo=openai&logoColor=white)](https://developers.openai.com/codex/skills)
