@@ -35,7 +35,7 @@ def warn(message: str) -> None:
 
 def main() -> int:
     if len(sys.argv) < 2:
-        return fail("usage: validate_paper_issues.py <issues.csv> [--strict]")
+        return fail("usage: validate_paper_issues.py <issues.csv> [--strict]  (--strict: warnings also fail)")
 
     path = Path(sys.argv[1])
     strict = "--strict" in sys.argv
@@ -108,24 +108,43 @@ def main() -> int:
         seen_ids.add(issue_id)
 
         # Parse citation counts
+        target = None
         try:
             target = int(row_data["Target_Citations"].strip())
             total_target_citations += target
         except ValueError:
-            if strict:
-                print(f"warning: row {idx}: 'Target_Citations' is not a number", file=sys.stderr)
-                warnings += 1
+            print(f"warning: row {idx}: 'Target_Citations' is not a number", file=sys.stderr)
+            warnings += 1
 
+        verified = None
         try:
             verified = int(row_data["Verified_Citations"].strip())
             total_verified_citations += verified
         except ValueError:
-            if strict:
-                print(f"warning: row {idx}: 'Verified_Citations' is not a number", file=sys.stderr)
-                warnings += 1
+            print(f"warning: row {idx}: 'Verified_Citations' is not a number", file=sys.stderr)
+            warnings += 1
+
+        # A DONE writing issue should meet its citation target
+        if (
+            phase == "Writing"
+            and status == "DONE"
+            and target is not None
+            and verified is not None
+            and verified < target
+        ):
+            print(
+                f"warning: row {idx}: Writing issue '{issue_id}' is DONE but "
+                f"Verified_Citations ({verified}) < Target_Citations ({target})",
+                file=sys.stderr,
+            )
+            warnings += 1
 
     if errors > 0:
         print(f"\nValidation failed with {errors} error(s).", file=sys.stderr)
+        return 1
+
+    if strict and warnings > 0:
+        print(f"\nValidation failed: {warnings} warning(s) in strict mode.", file=sys.stderr)
         return 1
 
     # Print summary

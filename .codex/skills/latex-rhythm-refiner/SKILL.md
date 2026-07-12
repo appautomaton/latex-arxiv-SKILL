@@ -3,7 +3,8 @@ name: latex-rhythm-refiner
 description: >
   Post-process LaTeX project prose to improve readability through varied
   sentence and paragraph lengths. Removes filler phrases and unnecessary
-  transitions while preserving all citations and semantic meaning.
+  transitions while preserving all citations and semantic meaning. Use
+  after drafting is complete, when sections read as monotonous or blocky.
 ---
 
 # LaTeX Rhythm Refiner
@@ -52,6 +53,8 @@ Remove when structure already implies the relationship:
 
 ### 5. Tighten Prose
 - Prefer active voice; replace vague verbs ("shows", "does", "works") with concrete ones
+- Replace mid-sentence em-dashes with commas, colons, or a new sentence
+- Use semicolons sparingly (at most one per paragraph as a rule of thumb)
 - Avoid repeated sentence openings across adjacent sentences ("This", "In practice", etc.)
 - Replace hedge stacks ("may potentially") with one qualifier
 - Each paragraph: one main idea, clear first sentence

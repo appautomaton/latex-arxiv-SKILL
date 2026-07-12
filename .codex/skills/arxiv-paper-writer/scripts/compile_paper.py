@@ -27,6 +27,23 @@ def parse_total_pages(log_path: Path) -> int | None:
     return int(match.group(1))
 
 
+def report_log_summary(project_dir: Path) -> None:
+    log_path = project_dir / "main.log"
+    if not log_path.exists():
+        print("warning: main.log not found; skipping log summary", file=sys.stderr)
+        return
+    text = log_path.read_text(encoding="utf-8", errors="replace")
+
+    undefined_citations = len(re.findall(r"Citation .*? undefined", text))
+    overfull_hboxes = len(re.findall(r"Overfull \\hbox", text))
+
+    print("\nLog summary:")
+    print(f"  Undefined citations: {undefined_citations}")
+    print(f"  Overfull \\hbox warnings: {overfull_hboxes}")
+    if undefined_citations or overfull_hboxes:
+        print("  Fix these before marking issues DONE (see Layout Hygiene in SKILL.md).")
+
+
 def parse_label_page(aux_path: Path, label: str) -> int | None:
     if not aux_path.exists():
         return None
@@ -152,8 +169,10 @@ def main() -> int:
             "main.tex",
         ]
         code = run(cmd, project_dir)
-        if code == 0 and args.report_page_counts:
-            report_page_counts(project_dir, args.references_start_label)
+        if code == 0:
+            report_log_summary(project_dir)
+            if args.report_page_counts:
+                report_page_counts(project_dir, args.references_start_label)
         return code
 
     # Fallback: pdflatex + bibtex
@@ -169,6 +188,7 @@ def main() -> int:
         if code != 0:
             return code
 
+    report_log_summary(project_dir)
     if args.report_page_counts:
         report_page_counts(project_dir, args.references_start_label)
 

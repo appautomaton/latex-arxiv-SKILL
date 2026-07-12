@@ -312,5 +312,9 @@ TSWLatexianTemp*
 __pycache__/
 *.py[cod]
 
+## SQLite sidecar files (arXiv registry)
+*.sqlite3-wal
+*.sqlite3-shm
+
 
 main.template.pdf

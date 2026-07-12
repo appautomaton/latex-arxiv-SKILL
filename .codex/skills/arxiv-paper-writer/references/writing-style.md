@@ -19,3 +19,5 @@
 - Wordy fillers ("in order to", "it is worth noting", "due to the fact that")
 - Vague claims without evidence
 - Repetitive sentence openings
+- Mid-sentence em-dashes: prefer commas, colons, or a new sentence
+- Semicolon overuse: at most one per paragraph as a rule of thumb

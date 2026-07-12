@@ -544,12 +544,33 @@ def ensure_citation_key(conn: sqlite3.Connection, *, work_id: int) -> str:
     return candidate
 
 
-def rewrite_bibtex_key(bibtex_text: str, new_key: str) -> str:
-    match = re.search(r"@(\w+)\s*\{\s*([^,]+)\s*,", bibtex_text)
-    if match is None:
-        return bibtex_text
-    start, end = match.span(2)
-    return bibtex_text[:start] + new_key + bibtex_text[end:]
+def escape_bibtex_text(value: str) -> str:
+    """Escape common BibTeX special characters unless already escaped."""
+    return re.sub(r"(?<!\\)([&%#_])", r"\\\1", value)
+
+
+def format_article_bibtex(work: dict[str, Any], cite_key: str) -> str:
+    """Format a registry work as an @article entry per references/bibtex-guide.md."""
+    arxiv_id = str(work["arxiv_id"])
+    authors = " and ".join(work.get("authors") or [])
+    journal = work.get("journal_ref") or f"arXiv preprint arXiv:{arxiv_id}"
+    fields = [
+        ("author", escape_bibtex_text(authors)),
+        ("title", escape_bibtex_text(str(work["title"]))),
+        ("journal", escape_bibtex_text(journal)),
+        ("year", year_from_published(work.get("published"))),
+        ("eprint", arxiv_id),
+        ("archivePrefix", "arXiv"),
+        ("primaryClass", work.get("primary_category")),
+        ("doi", work.get("doi")),
+        ("url", work.get("abs_url") or f"https://arxiv.org/abs/{arxiv_id}"),
+    ]
+    lines = [f"@article{{{cite_key},"]
+    for name, value in fields:
+        if value:
+            lines.append(f"  {name} = {{{value}}},")
+    lines.append("}")
+    return "\n".join(lines) + "\n"
 
 
 def ensure_work(conn: sqlite3.Connection, *, arxiv_id: str, timeout_s: int) -> int | None:
@@ -703,11 +724,17 @@ def cmd_fetch_bibtex(args: argparse.Namespace) -> int:
 
         for raw in arxiv_inputs:
             arxiv_id, _ = normalize_arxiv_id(raw)
+            work_cached = (
+                conn.execute("SELECT 1 FROM works WHERE arxiv_id = ?;", (arxiv_id,)).fetchone() is not None
+            )
             work_id = ensure_work(conn, arxiv_id=arxiv_id, timeout_s=args.timeout_s)
             if work_id is None:
                 print(f"warning: could not fetch metadata for {arxiv_id}", file=sys.stderr)
                 continue
 
+            bib_cached = (
+                conn.execute("SELECT 1 FROM bibtex WHERE work_id = ?;", (work_id,)).fetchone() is not None
+            )
             bibtex_text = ensure_bibtex(
                 conn,
                 arxiv_id=arxiv_id,
@@ -715,6 +742,7 @@ def cmd_fetch_bibtex(args: argparse.Namespace) -> int:
                 timeout_s=args.timeout_s,
                 refresh=args.refresh,
             )
+            did_fetch = args.refresh or not (work_cached and bib_cached)
             if bibtex_text is None:
                 print(f"warning: empty BibTeX for {arxiv_id}", file=sys.stderr)
                 continue
@@ -729,7 +757,7 @@ def cmd_fetch_bibtex(args: argparse.Namespace) -> int:
                 print(bibtex_text.rstrip())
                 print()
 
-            if args.sleep_s > 0:
+            if args.sleep_s > 0 and did_fetch:
                 time.sleep(args.sleep_s)
 
         conn.commit()
@@ -876,40 +904,43 @@ def cmd_export_bibtex(args: argparse.Namespace) -> int:
         ensure_initialized(conn)
 
         for arxiv_id in arxiv_ids:
+            work_cached = (
+                conn.execute("SELECT 1 FROM works WHERE arxiv_id = ?;", (arxiv_id,)).fetchone() is not None
+            )
             work_id = ensure_work(conn, arxiv_id=arxiv_id, timeout_s=args.timeout_s)
             if work_id is None:
                 print(f"warning: could not fetch metadata for {arxiv_id}", file=sys.stderr)
                 continue
 
-            bibtex_text = ensure_bibtex(
+            # Cache the raw arXiv BibTeX as provenance (best-effort; the exported
+            # entry is built from registry metadata, not from this text).
+            bib_cached = (
+                conn.execute("SELECT 1 FROM bibtex WHERE work_id = ?;", (work_id,)).fetchone() is not None
+            )
+            if ensure_bibtex(
                 conn,
                 arxiv_id=arxiv_id,
                 work_id=work_id,
                 timeout_s=args.timeout_s,
                 refresh=args.refresh,
-            )
-            if bibtex_text is None:
-                print(f"warning: empty BibTeX for {arxiv_id}", file=sys.stderr)
-                continue
+            ) is None:
+                print(f"warning: could not cache raw BibTeX for {arxiv_id}", file=sys.stderr)
 
-            cite_key = ensure_citation_key(conn, work_id=work_id)
-            rewritten = rewrite_bibtex_key(bibtex_text, cite_key).rstrip() + "\n"
+            payload = work_payload(conn, work_id=work_id, ensure_key=True)
+            entry = format_article_bibtex(payload, str(payload["citation_key"]))
+            did_fetch = args.refresh or not (work_cached and bib_cached)
 
             if out_path is None:
-                print(rewritten)
-                if args.sleep_s > 0:
-                    time.sleep(args.sleep_s)
-                continue
-
-            if cite_key in keys_in_file:
+                print(entry)
+            elif payload["citation_key"] in keys_in_file:
                 skipped += 1
             else:
                 with out_path.open("a", encoding="utf-8") as f:
-                    f.write(rewritten + "\n")
-                keys_in_file.add(cite_key)
+                    f.write(entry + "\n")
+                keys_in_file.add(str(payload["citation_key"]))
                 exported += 1
 
-            if args.sleep_s > 0:
+            if args.sleep_s > 0 and did_fetch:
                 time.sleep(args.sleep_s)
 
         conn.commit()
@@ -985,11 +1016,16 @@ def build_parser() -> argparse.ArgumentParser:
     p_bib.add_argument("arxiv_id", nargs="+", help="arXiv IDs (e.g., 2301.04104 or https://arxiv.org/abs/2301.04104v2).")
     p_bib.add_argument("--timeout-s", type=int, default=20, help="Network timeout seconds (default: 20).")
     p_bib.add_argument("--refresh", action="store_true", help="Force a network fetch (ignore cached BibTeX).")
-    p_bib.add_argument("--sleep-s", type=float, default=0.0, help="Sleep between requests (default: 0).")
+    p_bib.add_argument(
+        "--sleep-s",
+        type=float,
+        default=3.0,
+        help="Sleep between network fetches per arXiv API etiquette; cached items skip it (default: 3).",
+    )
     p_bib.add_argument("--print-bibtex", action="store_true", help="Print the BibTeX entries to stdout.")
     p_bib.add_argument(
         "--out-bib",
-        help="Optional path to append fetched BibTeX into a .bib file (no de-dup here; DB remains canonical).",
+        help="Optional path to append raw fetched BibTeX into a .bib file (no de-dup; use export-bibtex for formatted @article entries).",
     )
     p_bib.set_defaults(fn=cmd_fetch_bibtex)
 
@@ -1000,13 +1036,21 @@ def build_parser() -> argparse.ArgumentParser:
     p_get.add_argument("--ensure-key", action="store_true", help="Ensure a citation key exists for each work (stored in DB).")
     p_get.set_defaults(fn=cmd_get)
 
-    p_export = sub.add_parser("export-bibtex", help="Export BibTeX with stable citation keys.")
+    p_export = sub.add_parser(
+        "export-bibtex",
+        help="Export @article entries (per references/bibtex-guide.md) with stable citation keys.",
+    )
     p_export.add_argument("arxiv_id", nargs="*", help="arXiv IDs to export (optional if using --search-id).")
     p_export.add_argument("--search-id", type=int, help="Export all results from a stored search_id.")
     p_export.add_argument("--out-bib", help="Append entries to this .bib file (skips existing keys). If omitted, prints to stdout.")
     p_export.add_argument("--timeout-s", type=int, default=20, help="Network timeout seconds (default: 20).")
     p_export.add_argument("--refresh", action="store_true", help="Force a network fetch (ignore cached BibTeX).")
-    p_export.add_argument("--sleep-s", type=float, default=0.0, help="Sleep between requests (default: 0).")
+    p_export.add_argument(
+        "--sleep-s",
+        type=float,
+        default=3.0,
+        help="Sleep between network fetches per arXiv API etiquette; cached items skip it (default: 3).",
+    )
     p_export.set_defaults(fn=cmd_export_bibtex)
 
     p_stats = sub.add_parser("stats", help="Print basic registry stats.")
