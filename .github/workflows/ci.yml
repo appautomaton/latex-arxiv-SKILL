@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  smoke:
+    name: Smoke checks (no LaTeX)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run smoke checks
+        run: bash tests/smoke.sh
+
+  compile:
+    name: Compile scaffolded template (TeX Live)
+    runs-on: ubuntu-latest
+    container: texlive/texlive:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure python3
+        run: command -v python3 || (apt-get update && apt-get install -y --no-install-recommends python3)
+      - name: Scaffold and compile
+        run: bash tests/compile_smoke.sh
