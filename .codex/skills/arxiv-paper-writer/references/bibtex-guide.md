@@ -20,3 +20,4 @@
 - Include DOI and URL when available.
 - Use braces to protect capitalization in titles (e.g., `{BERT}`, `{CNN}`).
 - Use three-letter month abbreviations: jan, feb, mar, etc.
+- Never put `%` comments inside an entry; BibTeX treats them as content and breaks the entry. Full-line comments between entries are fine.
